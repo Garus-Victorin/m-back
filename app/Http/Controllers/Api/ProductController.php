@@ -14,8 +14,9 @@ class ProductController extends Controller
     public function index(): JsonResponse
     {
         $query = Product::query()
-            ->with(['shop', 'category'])
+            ->with(['shop', 'category', 'images'])
             ->where('status', 'published')
+            ->where('moderation_status', 'approved')
             ->where('is_active', true)
             ->whereHas('shop', fn (Builder $builder) => $builder->where('status', 'active'));
 
@@ -66,10 +67,11 @@ class ProductController extends Controller
 
     public function show(Product $product): JsonResponse
     {
-        $product->load(['shop', 'category']);
+        $product->load(['shop', 'category', 'images']);
 
         if (
             $product->status !== 'published'
+            || $product->moderation_status !== 'approved'
             || ! $product->is_active
             || $product->shop->status !== 'active'
         ) {

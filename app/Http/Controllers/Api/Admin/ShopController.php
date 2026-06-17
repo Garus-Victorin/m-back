@@ -75,6 +75,21 @@ class ShopController extends Controller
             $attributes['slug'] = $this->generateUniqueSlug($attributes['name'], $shop->id);
         }
 
+        if (($attributes['status'] ?? null) === 'active' && $shop->status !== 'active') {
+            $attributes['activated_at'] = now();
+            $attributes['suspended_at'] = null;
+            $attributes['suspension_reason'] = null;
+        }
+
+        if (($attributes['status'] ?? null) === 'pending') {
+            $attributes['submitted_at'] = $shop->submitted_at ?? now();
+            $attributes['suspended_at'] = null;
+        }
+
+        if (($attributes['status'] ?? null) === 'suspended' && $shop->status !== 'suspended') {
+            $attributes['suspended_at'] = now();
+        }
+
         $shop->update($attributes);
 
         return response()->json([

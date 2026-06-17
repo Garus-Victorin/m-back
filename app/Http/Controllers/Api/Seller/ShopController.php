@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Seller;
 
+use App\Actions\Seller\SubmitSellerShopForReviewAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Seller\StoreShopRequest;
 use App\Http\Requests\Seller\UpdateShopRequest;
@@ -20,8 +21,6 @@ class ShopController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $this->ensureSeller($user);
-
         if ($user->shop()->exists()) {
             throw ValidationException::withMessages([
                 'shop' => ['This seller already has a shop.'],
@@ -37,7 +36,7 @@ class ShopController extends Controller
             'email' => $request->input('email'),
             'address' => $request->input('address'),
             'city' => $request->input('city'),
-            'status' => 'pending',
+            'status' => 'draft',
         ]);
 
         return response()->json([
@@ -53,12 +52,10 @@ class ShopController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-
-        $this->ensureSeller($user);
-
         $shop = $user->shop()->first();
 
         abort_unless($shop, 404, 'Shop not found.');
+        $this->authorize('view', $shop);
 
         return response()->json([
             'success' => true,
@@ -71,11 +68,7 @@ class ShopController extends Controller
 
     public function update(UpdateShopRequest $request, Shop $shop): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
-
-        $this->ensureSeller($user);
-        $this->ensureOwnShop($user, $shop);
+        $this->authorize('update', $shop);
 
         $attributes = $request->validated();
 
@@ -94,15 +87,24 @@ class ShopController extends Controller
         ]);
     }
 
-    protected function ensureSeller(User $user): void
+    public function submitReview(Request $request, SubmitSellerShopForReviewAction $action): JsonResponse
     {
-        abort_unless($user->role === 'seller', 403, 'Only sellers can perform this action.');
-        abort_unless($user->is_active, 403, 'Seller account is inactive.');
-    }
+        /** @var User $user */
+        $user = $request->user();
+        $shop = $user->shop()->first();
 
-    protected function ensureOwnShop(User $user, Shop $shop): void
-    {
-        abort_unless($shop->user_id === $user->id, 403, 'You are not allowed to manage this shop.');
+        abort_unless($shop, 404, 'Shop not found.');
+        $this->authorize('update', $shop);
+
+        $shop = $action->execute($user, $shop);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Shop submitted for review successfully.',
+            'data' => [
+                'shop' => ShopResource::make($shop),
+            ],
+        ]);
     }
 
     protected function generateUniqueSlug(string $name, ?int $ignoreId = null): string

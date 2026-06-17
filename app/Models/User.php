@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -35,5 +36,15 @@ class User extends Authenticatable
     public function shop(): HasOne
     {
         return $this->hasOne(Shop::class);
+    }
+
+    public function kycSubmission(): HasOne
+    {
+        return $this->hasOne(SellerKycSubmission::class);
+    }
+
+    public function withdrawalRequests(): HasMany
+    {
+        return $this->hasMany(SellerWithdrawalRequest::class);
     }
 }

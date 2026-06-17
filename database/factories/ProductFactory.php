@@ -19,6 +19,13 @@ class ProductFactory extends Factory
     {
         $name = fake()->unique()->words(3, true);
 
+        $status = fake()->randomElement(['draft', 'published', 'archived']);
+        $moderationStatus = match ($status) {
+            'published' => 'approved',
+            'archived' => 'draft',
+            default => 'draft',
+        };
+
         return [
             'shop_id' => Shop::factory(),
             'category_id' => Category::factory(),
@@ -29,8 +36,15 @@ class ProductFactory extends Factory
             'description' => fake()->paragraph(),
             'price' => fake()->randomFloat(2, 100, 50000),
             'stock' => fake()->numberBetween(0, 100),
-            'status' => fake()->randomElement(['draft', 'published', 'archived']),
-            'is_active' => true,
+            'reserved_stock' => 0,
+            'status' => $status,
+            'moderation_status' => $moderationStatus,
+            'submitted_for_review_at' => $moderationStatus === 'approved' ? now()->subDay() : null,
+            'reviewed_by' => null,
+            'reviewed_at' => $moderationStatus === 'approved' ? now()->subHours(12) : null,
+            'rejection_reason' => null,
+            'archived_at' => $status === 'archived' ? now()->subDay() : null,
+            'is_active' => $status !== 'archived',
         ];
     }
 }

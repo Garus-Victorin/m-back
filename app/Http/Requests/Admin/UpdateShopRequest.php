@@ -25,7 +25,7 @@ class UpdateShopRequest extends FormRequest
             'email' => ['sometimes', 'nullable', 'email', 'max:255'],
             'address' => ['sometimes', 'nullable', 'string', 'max:255'],
             'city' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'status' => ['sometimes', 'required', Rule::in(['pending', 'active', 'suspended'])],
+            'status' => ['sometimes', 'required', Rule::in(['draft', 'pending', 'active', 'suspended'])],
         ];
     }
 }

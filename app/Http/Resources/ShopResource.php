@@ -25,6 +25,10 @@ class ShopResource extends JsonResource
             'address' => $this->address,
             'city' => $this->city,
             'status' => $this->status,
+            'submitted_at' => $this->submitted_at,
+            'activated_at' => $this->activated_at,
+            'suspended_at' => $this->suspended_at,
+            'suspension_reason' => $this->suspension_reason,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

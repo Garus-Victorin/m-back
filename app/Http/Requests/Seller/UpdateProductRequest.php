@@ -34,7 +34,7 @@ class UpdateProductRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string'],
             'price' => ['sometimes', 'required', 'numeric', 'min:0'],
             'stock' => ['sometimes', 'required', 'integer', 'min:0'],
-            'status' => ['sometimes', 'required', Rule::in(['draft', 'published', 'archived'])],
+            'status' => ['sometimes', 'required', Rule::in(['draft'])],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

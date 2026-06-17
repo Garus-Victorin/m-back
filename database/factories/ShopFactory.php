@@ -30,7 +30,7 @@ class ShopFactory extends Factory
             'email' => fake()->safeEmail(),
             'address' => fake()->address(),
             'city' => fake()->city(),
-            'status' => fake()->randomElement(['pending', 'active', 'suspended']),
+            'status' => fake()->randomElement(['draft', 'pending', 'active', 'suspended']),
         ];
     }
 }
