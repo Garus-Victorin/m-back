@@ -24,14 +24,16 @@ class RecordAuditLogAction
         [$targetType, $targetId] = $this->resolveTarget($target);
 
         return AuditLog::create([
-            'actor_id' => $actor?->id,
-            'action' => $action,
-            'target_type' => $targetType,
-            'target_id' => $targetId,
-            'before' => $before,
-            'after' => $after,
-            'ip_address' => $request?->ip(),
-            'request_id' => $request?->attributes->get('request_id') ?: $request?->header('X-Request-Id'),
+            "actor_id" => $actor?->id,
+            "action" => $action,
+            "target_type" => $targetType,
+            "target_id" => $targetId,
+            "before" => $before,
+            "after" => $after,
+            "ip_address" => $request?->ip(),
+            "request_id" =>
+                $request?->attributes->get("request_id") ?:
+                $request?->header("X-Request-Id"),
         ]);
     }
 
@@ -41,13 +43,16 @@ class RecordAuditLogAction
     protected function resolveTarget(Model|array|null $target): array
     {
         if ($target instanceof Model) {
-            return [$target->getMorphClass(), $target->getKey() ? (int) $target->getKey() : null];
+            return [
+                $target->getMorphClass(),
+                $target->getKey() ? (int) $target->getKey() : null,
+            ];
         }
 
         if (is_array($target)) {
             return [
-                isset($target['type']) ? (string) $target['type'] : null,
-                isset($target['id']) ? (int) $target['id'] : null,
+                isset($target["type"]) ? (string) $target["type"] : null,
+                isset($target["id"]) ? (int) $target["id"] : null,
             ];
         }
 
