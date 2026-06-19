@@ -97,6 +97,35 @@ Route::prefix("v1")->group(function (): void {
                 "submitReview",
             ])->name("seller.shops.submit-review");
 
+            Route::get("/shops/{shop}/reviews", [
+                ShopReviewController::class,
+                "index",
+            ])->name("shops.reviews.index");
+            Route::post("/shops/{shop}/reviews", [
+                ShopReviewController::class,
+                "store",
+            ])->name("shops.reviews.store");
+            Route::get("/shops/{shop}/reviews/{review}", [
+                ShopReviewController::class,
+                "show",
+            ])->name("shops.reviews.show");
+            Route::patch("/shops/{shop}/reviews/{review}", [
+                ShopReviewController::class,
+                "update",
+            ])->name("shops.reviews.update");
+            Route::delete("/shops/{shop}/reviews/{review}", [
+                ShopReviewController::class,
+                "destroy",
+            ])->name("shops.reviews.destroy");
+            Route::post("/shops/{shop}/reviews/{review}/approve", [
+                ShopReviewController::class,
+                "approve",
+            ])->name("shops.reviews.approve");
+            Route::post("/shops/{shop}/reviews/{review}/reject", [
+                ShopReviewController::class,
+                "reject",
+            ])->name("shops.reviews.reject");
+
             Route::post("/shops/logo", [
                 ShopBrandingController::class,
                 "uploadLogo",
